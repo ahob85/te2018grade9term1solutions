@@ -1,6 +1,6 @@
-
 /******************************************************************************
-                                   sumDouble(a, b)
+                                   sumDouble
+
 Instructions:
 Given two number values, return their sum. Unless the two values are the same,
 then return double their sum.
@@ -9,15 +9,23 @@ Examples:
 sumDouble(1, 2) → 3
 sumDouble(3, 2) → 5
 sumDouble(2, 2) → 8
+
 *******************************************************************************/
 
-
+function sumDouble(a, b) {
+  if(a === b) {
+    return (a + b) * 2;
+  } else {
+    return a + b;
+  }
+}
 
 // Remove comment below to test this function.
-//testSumDouble();
+testSumDouble();
 
 /******************************************************************************
-                                   makes10(a, b)
+                                   makes10
+
 Instructions:
 Given 2 numbers, a and b, return true if one if them is 10 or if their sum is 10.
 
@@ -25,15 +33,19 @@ Examples:
 makes10(9, 10) → true
 makes10(9, 9) → false
 makes10(1, 9) → true
+
 *******************************************************************************/
 
-
+function makes10(a, b) {
+  return a === 10 || b === 10 || a + b === 10;
+}
 
 // Remove comment below to test this function.
-//testMakes10();
+testMakes10();
 
 /******************************************************************************
-                          parrotTrouble(talking, hour)
+                                   parrotTrouble
+
 Instructions:
 We have a loud talking parrot. The "talking" parameter is a boolean that
 represents if the parrot is talking. The "hour" parameter is the current hour
@@ -46,13 +58,16 @@ parrotTrouble(true, 7) → false
 parrotTrouble(false, 6) → false
 *******************************************************************************/
 
-
+function parrotTrouble(talking, hour) {
+  return talking && (hour < 7 || hour > 20);
+}
 
 // Remove comment below to test this function.
-//testParrotTrouble();
+testParrotTrouble();
 
 /******************************************************************************
-                             alarmClock(day, vacation)
+                                   alarmClock
+
 Instructions:
 Given a day of the week encoded as 0=Sun, 1=Mon, 2=Tue, ...6=Sat, and a boolean
 indicating if we are on vacation, return a string of the form "7:00" indicating
@@ -66,13 +81,28 @@ alarmClock(6, true) → "off"
 alarmClock(0, false) → "10:00"
 *******************************************************************************/
 
-
+function alarmClock(day, vacation) {
+  if(day >= 1 && day <= 5) {
+    if(vacation) {
+      return "10:00";
+    } else {
+      return "7:00";
+    }
+  } else {
+    if(vacation) {
+      return "off";
+    } else {
+      return "10:00";
+    }
+  }
+}
 
 // Remove comment below to test this function.
-//testAlarmClock();
+testAlarmClock();
 
 /******************************************************************************
-                      caughtSpeeding(speed, isBirthday)
+                                   caughtSpeeding
+
 Instructions:
 You are driving a little too fast, and a police officer stops you. Write code
 to compute the result, encoded as a number value: 0=no ticket, 1=small ticket,
@@ -87,10 +117,21 @@ caughtSpeeding(65, false) → 1
 caughtSpeeding(65, true) → 0
 *******************************************************************************/
 
-
+function caughtSpeeding(speed, isBirthday) {
+  if(isBirthday) {
+    speed -= 5;
+  }
+  if(speed <= 60) {
+    return 0;
+  } else if(speed >= 61 && speed <= 80) {
+    return 1;
+  } else {
+    return 2;
+  }
+}
 
 // Remove comment below to test this function.
-//testCaughtSpeeding();
+testCaughtSpeeding();
 
 /****************************************************************************
                                     Tests

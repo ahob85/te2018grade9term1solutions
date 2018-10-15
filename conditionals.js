@@ -89,14 +89,14 @@ let myNum = 5;
 let guess = 2;
 if(guess < myNum) {
   console.log("Your guess is too low!");
-  if(guess <= myNum - 3) {
+  if(guess < myNum - 3) {
     console.log("You're cold.");
   } else {
     console.log("You're warm.");
   }
 } else if(guess > myNum) {
   console.log("Your guess is too high!");
-  if(guess >= myNum + 3) {
+  if(guess > myNum + 3) {
     console.log("You're cold.");
   } else {
     console.log("You're warm.");

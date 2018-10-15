@@ -1,5 +1,3 @@
-// Author: FirstName lastName
-
 /******************************************************************************
                                 constant variables
 
@@ -84,10 +82,7 @@ const WORDS = ("ant baboon badger bat bear beaver camel cat clam cobra cougar co
   processGameOver();
 *******************************************************************************/
 
-let missedLetters;
-let correctLetters;
-let secretWord;
-let running;
+let missedLetters, correctLetters, secretWord, running;
 
 /******************************************************************************
                                   printGreeting()
@@ -97,7 +92,12 @@ let running;
 *******************************************************************************/
 
 function printGreeting() {
-
+  console.log();
+  console.log("--------------------------------------------------------------");
+  console.log("                          Flower                              ");
+  console.log("--------------------------------------------------------------");
+  console.log("By: FirstName LastName");
+  console.log();
 }
 
 /******************************************************************************
@@ -110,7 +110,10 @@ function printGreeting() {
 *******************************************************************************/
 
 function setupGame() {
-
+  missedLetters = [];
+  correctLetters = [];
+  secretWord = getRandomWord();
+  running = true;
 }
 
 /******************************************************************************
@@ -123,7 +126,11 @@ function setupGame() {
 *******************************************************************************/
 
 function printMissedLetters() {
-
+  let missedLettersString = "";
+  for(let i = 0; i < missedLetters.length; i++) {
+    missedLettersString += missedLetters[i] + " ";
+  }
+  console.log("Missed letters: " + missedLettersString);
 }
 
 /******************************************************************************
@@ -140,7 +147,20 @@ function printMissedLetters() {
 *******************************************************************************/
 
 function printCorrectLetters() {
-
+  let blanks = [];
+  for(let i = 0; i < secretWord.length; i++) {
+    blanks.push("_");
+  }
+  for(let i = 0; i < secretWord.length; i++) {
+    if(correctLetters.indexOf(secretWord[i]) >= 0) {
+      blanks[i] = secretWord[i];
+    }
+  }
+  let blanksString = "";
+  for(let i = 0; i < blanks.length; i++) {
+    blanksString += blanks[i] + " ";
+  }
+  console.log("Correct letters: " + blanksString);
 }
 
 /******************************************************************************
@@ -151,7 +171,11 @@ function printCorrectLetters() {
   player has missed so far.
 *******************************************************************************/
 function printBoard() {
-
+  console.log();
+  console.log(FLOWER_PICS[missedLetters.length]);
+  printMissedLetters();
+  printCorrectLetters();
+  console.log();
 }
 
 /******************************************************************************
@@ -164,7 +188,8 @@ function printBoard() {
 *******************************************************************************/
 
 function getRandomWord() {
-
+  let randomIndex = Math.floor(Math.random() * WORDS.length);
+  return WORDS[randomIndex];
 }
 
 /******************************************************************************
@@ -189,7 +214,18 @@ function getRandomWord() {
 *******************************************************************************/
 
 function getGuess(alreadyGuessed) {
-
+  while(true) {
+    let guess = READLINE.question("Guess a letter: ").toLowerCase();
+    if(guess.length != 1) {
+      console.log("Please guess a single letter at a time.");
+    } else if(alreadyGuessed.indexOf(guess) >= 0) {
+      console.log("You have already guessed that letter. Try again.");
+    } else if("abcdefghijklmnopqrstuvwxyz".indexOf(guess) === -1) {
+      console.log("That is not a letter. Try again.");
+    } else {
+      return guess;
+    }
+  }
 }
 
 /******************************************************************************
@@ -214,7 +250,13 @@ function getGuess(alreadyGuessed) {
 *******************************************************************************/
 
 function processGuess() {
-
+  let alreadyGuessed = missedLetters.concat(correctLetters);
+  let guess = getGuess(alreadyGuessed);
+  if(secretWord.indexOf(guess) >= 0) {
+    correctLetters.push(guess);
+  } else {
+    missedLetters.push(guess);
+  }
 }
 
 /******************************************************************************
@@ -238,7 +280,21 @@ function processGuess() {
 *******************************************************************************/
 
 function checkWinLose() {
-
+  let win = true;
+  for(let i = 0; i < secretWord.length && win; i++) {
+    if(correctLetters.indexOf(secretWord[i]) === -1) {
+      win = false;
+    }
+  }
+  if(win) {
+    console.log("Yes! The secret word is \"" + secretWord + "\"! You win!");
+    processGameOver();
+  } else if(missedLetters.length === FLOWER_PICS.length - 1) {
+    printBoard();
+    console.log("You have run out of guesses!");
+    console.log("The secret word was \"" + secretWord + "\"");
+    processGameOver();
+  }
 }
 
 /******************************************************************************
@@ -250,7 +306,16 @@ function checkWinLose() {
 *******************************************************************************/
 
 function processGameOver() {
-
+  let response = READLINE.question("Do you want to play again? (yes or no): ");
+  if(response.toLowerCase().startsWith("y")) {
+    setupGame();
+    console.log();
+  } else {
+    running = false;
+    console.log();
+    console.log("Goodbye!");
+    console.log();
+  }
 }
 
 /******************************************************************************
@@ -267,8 +332,15 @@ function processGameOver() {
 *******************************************************************************/
 
 function run() {
-
+  printGreeting();
+  setupGame();
+  while(running) {
+    printBoard();
+    processGuess();
+    checkWinLose();
+  }
 }
 
 // Run the program!
 run();
+READLINE.question("Press Enter key to exit.");
