@@ -1,5 +1,3 @@
-// Author: FirstName lastName
-
 /******************************************************************************
                                 constant variables
 
@@ -27,8 +25,7 @@ const READLINE = require("READLINE-sync");
   not (false).
 *******************************************************************************/
 
-let contacts; 
-let quit;
+let contacts, quit;
 
 /******************************************************************************
                                   printGreeting()
@@ -38,7 +35,12 @@ let quit;
 *******************************************************************************/
 
 function printGreeting() {
-
+  console.log();
+  console.log("--------------------------------------------------------------");
+  console.log("                        Smart Contacts                        ");
+  console.log("--------------------------------------------------------------");
+  console.log("By: FirstName LastName");
+  console.log();
 }
 
 /******************************************************************************
@@ -50,7 +52,8 @@ function printGreeting() {
 *******************************************************************************/
 
 function setup() {
-
+  contacts = [];
+  quit = false;
 }
 
 /******************************************************************************
@@ -63,7 +66,12 @@ function setup() {
 *******************************************************************************/
 
 function getNameInput() {
-
+  let nameInput = READLINE.question("Name: ").trim();
+  while(nameInput.length === 0) {
+    console.log("Please enter at least one character.");
+    nameInput = READLINE.question("Name: ").trim();
+  }
+  return nameInput;
 }
 
 /******************************************************************************
@@ -80,7 +88,16 @@ function getNameInput() {
 *******************************************************************************/
 
 function checkNumber(number) {
-
+  number = parseInt(number);
+  if(number < 0) {
+    return false;
+  }
+  let digits = 0;
+  while(number > 0) {
+    digits++;
+    number = parseInt(number / 10);
+  }
+  return digits === 10;
 }
 
 /******************************************************************************
@@ -90,7 +107,12 @@ function checkNumber(number) {
   then return it. Use checkNumber() to validate phone numbers.
 *******************************************************************************/
 function getNumberInput() {
-
+  let numberInput = READLINE.question("Phone Number: ").trim();
+  while(!checkNumber(numberInput)) {
+    console.log("Please enter a 10-digit phone number (e.g., 1234567890).");
+    numberInput = READLINE.question("Phone Number: ").trim();
+  }
+  return numberInput;
 }
 
 /******************************************************************************
@@ -108,7 +130,20 @@ function getNumberInput() {
 *******************************************************************************/
 
 function checkEmail(email) {
-
+  if(email.length === 0) {
+    return true;
+  }
+  let firstAT = email.indexOf("@");
+  let secondAT = email.indexOf("@", firstAT + 1);
+  if(firstAT < 1 || secondAT != -1) {
+    return false;
+  }
+  let topLevelDomains = [".com", ".org", ".net", ".edu"];
+  let lastFourCharacters = email.substring(email.length - 4);
+  if(topLevelDomains.indexOf(lastFourCharacters) === -1) {
+    return false;
+  }
+  return true;
 }
 
 /******************************************************************************
@@ -119,7 +154,12 @@ function checkEmail(email) {
 *******************************************************************************/
 
 function getEmailInput() {
-
+  let emailInput = READLINE.question("Email Address (Optional): ").trim();
+  while(!checkEmail(emailInput)) {
+    console.log("Please enter a valid email address.");
+    emailInput = READLINE.question("Email Address (Optional): ").trim();
+  }
+  return emailInput;
 }
 
 /******************************************************************************
@@ -141,7 +181,15 @@ function getEmailInput() {
 *******************************************************************************/
 
 function compareContacts(a, b) {
-
+  let nameA = a.name.toLowerCase();
+  let nameB = b.name.toLowerCase();
+  if(nameA < nameB) {
+    return -1;
+  } else if(nameA > nameB) {
+    return 1;
+  } else {
+    return 0;
+  }
 }
 
 /******************************************************************************
@@ -161,7 +209,22 @@ function compareContacts(a, b) {
 *******************************************************************************/
 
 function addContact() {
-
+  console.log("Add Contact");
+  let nameInput = getNameInput();
+  let numberInput = getNumberInput();
+  let emailInput = getEmailInput();
+  let notesInput = READLINE.question("Notes (optional): ").trim();
+  let contact = {
+    name:nameInput,
+    number:numberInput,
+    email:emailInput,
+    notes:notesInput
+  };
+  contacts.push(contact);
+  contacts.sort(compareContacts);
+  console.log();
+  console.log("Contact added successfully!");
+  console.log();
 }
 
 /******************************************************************************
@@ -176,7 +239,12 @@ function addContact() {
 *******************************************************************************/
 
 function getContactIndex(contactName) {
-
+  for(let i = 0; i < contacts.length; i++) {
+    if(contacts[i].name.toLowerCase() === contactName.toLowerCase()) {
+      return i;
+    }
+  }
+  return -1;
 }
 
 /******************************************************************************
@@ -193,7 +261,17 @@ function getContactIndex(contactName) {
 *******************************************************************************/
 
 function removeContact() {
-
+  console.log("Remove Contact");
+  let contactIndex = getContactIndex(getNameInput());
+  if(contactIndex != -1) {
+    contacts.splice(contactIndex, 1);
+    console.log();
+    console.log("Contact removed!");
+  } else {
+    console.log();
+    console.log("Can't find that contact.");
+  }
+  console.log();
 }
 
 /******************************************************************************
@@ -217,7 +295,38 @@ function removeContact() {
 *******************************************************************************/
 
 function displayUpdateMenu(contactIndex) {
-
+  console.log("Update " + contacts[contactIndex].name);
+  console.log("1: Name");
+  console.log("2: Phone Number");
+  console.log("3: Email Address");
+  console.log("4: Notes");
+  console.log("0: Return to Main Menu")
+  let choice = READLINE.question("Enter a value: ").trim();
+  while(!(choice >= 0 && choice <= 4)) {
+      console.log("Please make a valid choice");
+      choice = READLINE.question("Enter a value: ").trim();
+  }
+  if(choice == 1) {
+    contacts[contactIndex].name = getNameInput();
+    contacts.sort(compareContacts);
+    console.log();
+    console.log("Contact name updated!");
+  } else if(choice == 2) {
+    contacts[contactIndex].number = getNumberInput();
+    console.log();
+    console.log("Contact phone number updated!");
+  } else if(choice == 3) {
+    contacts[contactIndex].email = getEmailInput();
+    console.log();
+    console.log("Contact email address updated!");
+  } else if(choice == 4) {
+    contacts[contactIndex].notes = READLINE.question("Notes (optional): ").trim();
+    console.log();
+    console.log("Contact notes updated!");
+  } else if(choice == 0) {
+    console.log();
+    console.log("Nothing updated!");
+  }
 }
 
 /******************************************************************************
@@ -232,7 +341,16 @@ function displayUpdateMenu(contactIndex) {
 *******************************************************************************/
 
 function updateContact() {
-
+  console.log("Update Contact");
+  let contactIndex = getContactIndex(getNameInput());
+  if(contactIndex != -1) {
+    console.log();
+    displayUpdateMenu(contactIndex);
+  } else {
+    console.log();
+    console.log("Can't find that contact.");
+  }
+  console.log();
 }
 
 /******************************************************************************
@@ -244,7 +362,12 @@ function updateContact() {
 *******************************************************************************/
 
 function printContactInfo(contactName) {
-
+  let contactIndex = getContactIndex(contactName);
+  console.log("Name: " + contacts[contactIndex].name);
+  console.log("Phone Number: " + contacts[contactIndex].number);
+  console.log("Email Address: " + contacts[contactIndex].email);
+  console.log("Notes: " + contacts[contactIndex].notes);
+  console.log();
 }
 
 /******************************************************************************
@@ -261,7 +384,26 @@ function printContactInfo(contactName) {
 *******************************************************************************/
 
 function searchContact() {
-
+  console.log("Search Contact");
+  let contactName = getNameInput();
+  let matches = [];
+  for(let i = 0; i < contacts.length; i++) {
+    if(contacts[i].name.toLowerCase().startsWith(contactName.toLowerCase())) {
+      matches.push(contacts[i]);
+    }
+  }
+  if(matches.length > 0) {
+    console.log();
+    console.log(matches.length + " matches found:");
+    console.log();
+    for(let i = 0; i < matches.length; i++) {
+      printContactInfo(matches[i].name);
+    }
+  } else {
+    console.log();
+    console.log("No matches found.");
+    console.log();
+  }
 }
 
 /******************************************************************************
@@ -273,7 +415,11 @@ function searchContact() {
 *******************************************************************************/
 
 function printAllContacts() {
-
+  console.log("Printing " + contacts.length + " Contact(s):");
+  console.log();
+  for(let i = 0; i < contacts.length; i++) {
+    printContactInfo(contacts[i].name);
+  }
 }
 
 /******************************************************************************
@@ -296,7 +442,35 @@ function printAllContacts() {
 *******************************************************************************/
 
 function displayMainMenu() {
-
+  console.log("Main Menu");
+  console.log("1: Add Contact");
+  console.log("2: Remove Contact");
+  console.log("3: Update Contact");
+  console.log("4: Search Contact");
+  console.log("5: Print All Contacts");
+  console.log("0: Quit");
+  let choice = READLINE.question("Enter a value: ").trim();
+  while(!(choice >= 0 && choice <= 5)) {
+    console.log("Please make a valid choice.");
+    choice = READLINE.question("Enter a value: ").trim();
+  }
+  console.log();
+  if(choice >= 2 && choice <= 5 && contacts.length === 0) {
+    console.log("You have no contacts.");
+    console.log();
+  } else if(choice == 1) {
+    addContact();
+  } else if(choice == 2) {
+    removeContact();
+  } else if(choice == 3) {
+    updateContact();
+  } else if(choice == 4) {
+    searchContact();
+  } else if(choice == 5) {
+    printAllContacts();
+  } else if(choice == 0) {
+    quit = true;
+  }
 }
 
 /******************************************************************************
@@ -312,8 +486,14 @@ function displayMainMenu() {
 *******************************************************************************/
 
 function run() {
-
+  printGreeting();
+  setup();
+  while(!quit) {
+    displayMainMenu();
+  }
+  console.log("Goodbye!");
 }
 
 // Run the program!
 run();
+READLINE.question("Press Enter key to exit.");
